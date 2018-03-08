@@ -1,1 +1,1 @@
-zad1
+Simple C echo server
