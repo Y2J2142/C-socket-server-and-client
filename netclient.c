@@ -9,7 +9,6 @@
 #include <unistd.h>
 
 
-
 void reverseValue(const long long int size, void* value){
     int i;
     char result[32]; // never seen built-in types >8 bytes (have room for 32)
@@ -25,8 +24,8 @@ void reverseValue(const long long int size, void* value){
 
 double ntohd(double src)
 {
-#   if __FLOAT_WORD_ORDER__ == __ORDER_BIG_ENDIAN__
-        reverseValue(sizeof(src), &src);
+#   if __FLOAT_WORD_ORDER__ == __ORDER_LITTLE_ENDIAN__
+        reverseValue(sizeof(double), &src);
 #   endif
         return src;
 

@@ -24,8 +24,8 @@ void reverseValue(const long long int size, void* value){
 
 double ntohd(double src)
 {
-#   if __FLOAT_WORD_ORDER__ == __ORDER_BIG_ENDIAN__
-        reverseValue(sizeof(src), &src);
+#   if __FLOAT_WORD_ORDER__ == __ORDER_LITTLE_ENDIAN__
+        reverseValue(sizeof(double), &src);
 #   endif
         return src;
 
@@ -53,7 +53,10 @@ void read_request(request * rq)
 {
 	rq->opcode0 = 4;
 	if(rq->opcode1 == 1)
-		rq->d.n = ntohd(sqrt(rq->d.n));
+	{
+		rq->d.n = sqrt(ntohd(rq->d.n));
+		rq->d.n = ntohd(rq->d.n);
+	}
 	else{
 		time_t now = time(0);
 		rq->d.td.size_of_time = strlen(ctime(&now));
