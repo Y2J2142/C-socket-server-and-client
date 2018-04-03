@@ -9,6 +9,28 @@
 #include <time.h>
 #include <string.h>
 
+void reverseValue(const long long int size, void* value){
+    int i;
+    char result[32]; // never seen built-in types >8 bytes (have room for 32)
+    for( i=0; i<size; i+=1 ){
+        result[i] = ((char*)value)[size-i-1];
+    }
+    for( i=0; i<size; i+=1 ){
+        ((char*)value)[i] = result[i];
+    }
+}
+
+
+
+double ntohd(double src)
+{
+#   if __FLOAT_WORD_ORDER__ == __ORDER_BIG_ENDIAN__
+        reverseValue(sizeof(src), &src);
+#   endif
+        return src;
+
+}
+
 typedef struct{
 	int size_of_time;
 	char time_str[20];
@@ -31,15 +53,13 @@ void read_request(request * rq)
 {
 	rq->opcode0 = 4;
 	if(rq->opcode1 == 1)
-		rq->d.n = sqrt(rq->d.n);
+		rq->d.n = ntohd(sqrt(rq->d.n));
 	else{
 		time_t now = time(0);
 		rq->d.td.size_of_time = strlen(ctime(&now));
 		strcpy(rq->d.td.time_str, ctime(&now));
 		
 	}
-
-
 }
 
 
@@ -86,10 +106,11 @@ main ()
 
 			/*  If we're the child, we can now read/write to the client on client_sockfd.
 				The five second delay is just for this demonstration.  */
-
+			while(1){
 			read (client_sockfd, &rq, sizeof(request));
 			read_request(&rq);
 			send(client_sockfd, &rq, sizeof(request), 0);
+			}
 			close (client_sockfd);
 			exit (0);
 		}
